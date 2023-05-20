@@ -35,4 +35,4 @@ add_compile_options(
 
 add_compile_definitions(SWITCH)
 
-add_subdirectory(time)
+add_subdirectory(src)
