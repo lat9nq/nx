@@ -4,7 +4,7 @@
 #include <switch/services/applet.h>
 #include <switch/services/hid.h>
 
-int main(int argc, char **argv) {
+int main() {
   consoleInit(NULL);
 
   padConfigureInput(1, HidNpadStyleSet_NpadStandard);
@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
     if (kDown & HidNpadButton_Plus) {
       break;
     }
+
+    // time_zone();
 
     consoleUpdate(NULL);
   }
