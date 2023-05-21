@@ -38,20 +38,24 @@ int main() {
 
     bool up = kDown & HidNpadButton_AnyUp;
     bool down = kDown & HidNpadButton_AnyDown;
+    bool left = kDown & HidNpadButton_AnyLeft;
+    bool right = kDown & HidNpadButton_AnyRight;
 
-    if (up || down || !first_time) {
+    if (up || down || left || right || !first_time) {
       first_time = 1;
-      index = index + down - up;
+      index = index + down - up + 10 * (right - left);
 
-      if ((s32)index > data.location_count) {
-        index = data.location_count;
+      if ((s32)index < 0) {
+        index = 0;
+      } else if (index >= (u32)data.location_count) {
+        index = data.location_count - 1;
       }
 
       timeLoadTimeZoneRule(&data.name_array[index], rule);
       PrintTimezones(&data, rule, index);
-    }
 
-    // PrintTimezones(&data, rule, index);
+      TimeDateCtl(rule);
+    }
 
     consoleUpdate(NULL);
   }
