@@ -3,7 +3,7 @@
 #include <switch/services/time.h>
 
 typedef struct {
-  u32 tt_gmtoff;
+  s32 tt_gmtoff;
   u32 tt_isdst;
   u8 padding[3];
   u32 tt_abbrind;

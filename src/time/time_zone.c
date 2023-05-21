@@ -33,8 +33,9 @@ void PrintTimezones(const time_data *data, const TimeZoneRule *rule,
   printf("timecmt: %-4u, typecnt: %-4u, charcnt: %-4u, goback: %-4u\n",
          rule_data->timecnt, rule_data->typecnt, rule_data->charcnt,
          rule_data->goback);
-  printf("gmtoff: %08x, isdst: %08x, abbrind: %08x, isstd: %02x, isgmt: %02x\n",
-         ttis->tt_gmtoff, ttis->tt_isdst, ttis->tt_abbrind, ttis->tt_ttisstd,
-         ttis->tt_ttisgmt);
+  printf("gmtoff: %.1f (%d), isdst: %08x, abbrind: %08x, isstd: %02x, isgmt: "
+         "%02x\n",
+         ttis->tt_gmtoff / 3600.0, ttis->tt_gmtoff, ttis->tt_isdst,
+         ttis->tt_abbrind, ttis->tt_ttisstd, ttis->tt_ttisgmt);
   printf("%s\n", rule_data->chars);
 }
