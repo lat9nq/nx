@@ -1,5 +1,7 @@
 add_executable(time_elf EXCLUDE_FROM_ALL
-    main.c)
+    main.c
+    time_zone.h
+    time_zone.c)
 
 target_link_libraries(time_elf PRIVATE ${LIBNX_LIBRARY})
 
