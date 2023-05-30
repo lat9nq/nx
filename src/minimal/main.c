@@ -1,4 +1,6 @@
-#include <switch.h>
+#include <switch/runtime/devices/console.h>
+#include <switch/runtime/pad.h>
+#include <switch/services/applet.h>
 
 int main() {
   consoleInit(NULL);
