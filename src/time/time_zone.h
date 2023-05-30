@@ -32,7 +32,7 @@ typedef struct {
   TimeLocationName *name_array;
 } time_data;
 
-void InitializeTZData(time_data *data);
+int InitializeTZData(time_data *data);
 void PrintTimezones(const time_data *data, const TimeZoneRule *rule, int index);
 
 void TimeDateCtl(const TimeZoneRule *rule);

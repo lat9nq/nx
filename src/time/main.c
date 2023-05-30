@@ -19,12 +19,12 @@ int main() {
 
   TimeZoneRule *rule = malloc(sizeof(*rule));
 
-  time_data data;
-  InitializeTZData(&data);
-
-  timeLoadTimeZoneRule(&data.name_array[0], rule);
-
   u32 index = 0;
+  time_data data;
+  index = InitializeTZData(&data);
+
+  timeLoadTimeZoneRule(&data.name_array[index], rule);
+
   u8 first_time = 0;
 
   while (appletMainLoop()) {
@@ -36,14 +36,15 @@ int main() {
       break;
     }
 
-    bool up = kDown & HidNpadButton_AnyUp;
-    bool down = kDown & HidNpadButton_AnyDown;
-    bool left = kDown & HidNpadButton_AnyLeft;
-    bool right = kDown & HidNpadButton_AnyRight;
+    bool dup = kDown & HidNpadButton_Up;
+    bool ddown = kDown & HidNpadButton_Down;
+    bool dleft = kDown & HidNpadButton_Left;
+    bool dright = kDown & HidNpadButton_Right;
+    bool dpad = dup || ddown || dleft || dright;
 
-    if (up || down || left || right || !first_time) {
+    if (dpad || !first_time) {
       first_time = 1;
-      index = index + down - up + 10 * (right - left);
+      index = index + dup - ddown + 10 * (dright - dleft);
 
       if ((s32)index < 0) {
         index = 0;
@@ -51,9 +52,11 @@ int main() {
         index = data.location_count - 1;
       }
 
-      timeLoadTimeZoneRule(&data.name_array[index], rule);
-      PrintTimezones(&data, rule, index);
+      if (dpad) {
+        timeLoadTimeZoneRule(&data.name_array[index], rule);
+      }
 
+      PrintTimezones(&data, rule, index);
       TimeDateCtl(rule);
     }
 
