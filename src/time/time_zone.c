@@ -44,14 +44,11 @@ void PrintTimezones(const time_data *data, const TimeZoneRule *rule,
 
   printf("timecnt: %-4u, typecnt: %-4u, charcnt: %-4u\n", rule_data->timecnt,
          rule_data->typecnt, rule_data->charcnt);
-  printf("gmtoff: %.2f (%d), isdst: %08x, abbrind: %08x, isstd: %02x, isgmt: "
-         "%02x\n",
-         ttis->tt_gmtoff / 3600.0, ttis->tt_gmtoff, ttis->tt_isdst,
-         ttis->tt_abbrind, ttis->tt_ttisstd, ttis->tt_ttisgmt);
+  printf("gmtoff: %.2f (%d)\n", ttis->tt_gmtoff / 3600.0, ttis->tt_gmtoff);
   printf("%s\n", rule_data->chars);
 }
 
-void TimeDateCtl(const TimeZoneRule *rule) {
+void TimeDateCtl(const TimeZoneRule *rule, int ats_offset) {
   printf("\x1b[10;1H");
 
   struct timespec ts;
@@ -81,4 +78,28 @@ void TimeDateCtl(const TimeZoneRule *rule) {
   printf("%10s: %s", "local", s);
   asctime_r(&gmt, s);
   printf("%10s: %s", "gmt", s);
+
+  // Display most recent transition time
+  TzRuleData *r_data = (TzRuleData *)rule;
+
+  u64 index;
+  for (index = 0; index < r_data->timecnt; index++) {
+    if (r_data->ats[index] == 0) {
+      break;
+    }
+    if ((s64)r_data->ats[index] > ts.tv_sec) {
+      break;
+    }
+  }
+  index--;
+
+  index += ats_offset;
+  if (index > r_data->timecnt) {
+    index -= ats_offset;
+  }
+
+  struct tm at;
+  gmtime_r((const long *)&r_data->ats[index], &at);
+  asctime_r(&at, s);
+  printf("Last transition: %s ats[%ld] %20s\n", s, index, " ");
 }

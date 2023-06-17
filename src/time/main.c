@@ -26,6 +26,7 @@ int main() {
   timeLoadTimeZoneRule(&data.name_array[index], rule);
 
   u8 first_time = 0;
+  int ats_offset = 0;
 
   while (appletMainLoop()) {
     padUpdate(&pad);
@@ -42,9 +43,21 @@ int main() {
     bool dright = kDown & HidNpadButton_Right;
     bool dpad = dup || ddown || dleft || dright;
 
-    if (dpad || !first_time) {
+    bool f_a = kDown & HidNpadButton_A;
+    bool f_b = kDown & HidNpadButton_B;
+    bool f_x = kDown & HidNpadButton_X;
+    bool f_y = kDown & HidNpadButton_Y;
+    bool f_r = kDown & HidNpadButton_R;
+    bool face_button = f_a || f_b || f_x || f_y || f_r;
+
+    if (dpad || !first_time || face_button) {
       first_time = 1;
       index = index + dup - ddown + 10 * (dright - dleft);
+
+      ats_offset += f_a * 1 + f_b * -1 + f_x * 100 + f_y * -100;
+      if (f_r) {
+        ats_offset = 0;
+      }
 
       if ((s32)index < 0) {
         index = 0;
@@ -57,7 +70,7 @@ int main() {
       }
 
       PrintTimezones(&data, rule, index);
-      TimeDateCtl(rule);
+      TimeDateCtl(rule, ats_offset);
     }
 
     consoleUpdate(NULL);

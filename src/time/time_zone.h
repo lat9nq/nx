@@ -35,4 +35,4 @@ typedef struct {
 int InitializeTZData(time_data *data);
 void PrintTimezones(const time_data *data, const TimeZoneRule *rule, int index);
 
-void TimeDateCtl(const TimeZoneRule *rule);
+void TimeDateCtl(const TimeZoneRule *rule, int ats_offset);
