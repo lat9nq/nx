@@ -4,7 +4,9 @@
 #include <string.h>
 #include <switch.h>
 #include <switch/services/time.h>
+#define __TM_ZONE tm_zone
 #include <time.h>
+#undef __TM_ZONE
 
 int InitializeTZData(time_data *data) {
   Result result = timeGetTotalLocationNameCount(&data->location_count);
@@ -40,12 +42,11 @@ void PrintTimezones(const time_data *data, const TimeZoneRule *rule,
 
   printf("%-25s\n", data->name_array[index].name);
   const TzRuleData *rule_data = (TzRuleData *)rule;
-  const ttinfo *ttis = &rule_data->ttis[0];
 
-  printf("timecnt: %-4u, typecnt: %-4u, charcnt: %-4u\n", rule_data->timecnt,
+  printf("timecnt: %u, typecnt: %u, charcnt: %u\n", rule_data->timecnt,
          rule_data->typecnt, rule_data->charcnt);
-  printf("gmtoff: %.2f (%d)\n", ttis->tt_gmtoff / 3600.0, ttis->tt_gmtoff);
-  printf("%s\n", rule_data->chars);
+  printf("back: %d, ahead: %d\n", rule_data->goback, rule_data->goahead);
+  // printf("%s\n", rule_data->chars);
 }
 
 void TimeDateCtl(const TimeZoneRule *rule, int ats_offset) {
@@ -69,11 +70,13 @@ void TimeDateCtl(const TimeZoneRule *rule, int ats_offset) {
   cal_time.tm_wday = nx_caltime_info.wday;
   cal_time.tm_yday = nx_caltime_info.yday;
   cal_time.tm_isdst = nx_caltime_info.DST;
+  cal_time.tm_zone = nx_caltime_info.timezoneName;
 
   struct tm gmt;
   gmtime_r(&ts.tv_sec, &gmt);
 
   char s[255];
+  printf("%10s: %-5s\n", "zone name", cal_time.tm_zone);
   asctime_r(&cal_time, s);
   printf("%10s: %s", "local", s);
   asctime_r(&gmt, s);

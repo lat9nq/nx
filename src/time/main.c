@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <string.h>
 #include <switch.h>
 #include <switch/services/hid.h>
 #include <switch/services/time.h>
 
 #include "time/time_zone.h"
+
+static void RandomizeRule(TimeZoneRule *rule) {
+  for (u32 i = 0; i < sizeof(*rule); i++) {
+    ((u8 *)rule)[i] = rand();
+  }
+}
 
 int main() {
   consoleInit(NULL);
@@ -23,7 +30,9 @@ int main() {
   time_data data;
   index = InitializeTZData(&data);
 
-  timeLoadTimeZoneRule(&data.name_array[index], rule);
+  Result result;
+
+  result = timeLoadTimeZoneRule(&data.name_array[index], rule);
 
   u8 first_time = 0;
   int ats_offset = 0;
@@ -48,7 +57,8 @@ int main() {
     bool f_x = kDown & HidNpadButton_X;
     bool f_y = kDown & HidNpadButton_Y;
     bool f_r = kDown & HidNpadButton_R;
-    bool face_button = f_a || f_b || f_x || f_y || f_r;
+    bool f_l = kDown & HidNpadButton_L;
+    bool face_button = f_a || f_b || f_x || f_y || f_r || f_l;
 
     if (dpad || !first_time || face_button) {
       first_time = 1;
@@ -66,11 +76,22 @@ int main() {
       }
 
       if (dpad) {
-        timeLoadTimeZoneRule(&data.name_array[index], rule);
+        result = timeLoadTimeZoneRule(&data.name_array[index], rule);
+      } else if (f_l) {
+        TimeLocationName name;
+        strncpy(name.name, "INVALID", 36);
+        RandomizeRule(rule);
+        result = timeLoadTimeZoneRule(&name, rule);
       }
 
       PrintTimezones(&data, rule, index);
-      TimeDateCtl(rule, ats_offset);
+      if (result == 0) {
+        TimeDateCtl(rule, ats_offset);
+      } else {
+        FILE *f = fopen("rule_data", "w");
+        fwrite(rule, sizeof(*rule), 1, f);
+        fclose(f);
+      }
     }
 
     consoleUpdate(NULL);

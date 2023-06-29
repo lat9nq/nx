@@ -23,7 +23,7 @@ typedef struct {
   u8 types[1000];
   ttinfo ttis[128];
   char chars[512];
-  u16 defaulttype;
+  u32 defaulttype;
   u8 unused[0x12c4];
 } TzRuleData;
 
