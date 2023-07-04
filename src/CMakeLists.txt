@@ -25,3 +25,4 @@ add_compile_definitions(SWITCH)
 
 add_subdirectory(time)
 add_subdirectory(minimal)
+add_subdirectory(time_shared_mem)
