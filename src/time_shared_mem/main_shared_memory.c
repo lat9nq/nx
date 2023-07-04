@@ -36,12 +36,16 @@ int main() {
       offset -= 0x100;
     }
 
+    const int row_length = 16;
+    const int row_count = 42;
+
     printf("\x1b[1;1H");
-    for (int e = 0; e < 42; e++) {
-      printf("%04x: ", 24 * e + offset);
-      for (int i = 0; i < 24; i++) {
-        if (i + (24 * e) + offset < 0x1000) {
-          printf("%02x ", *(shared_mem + i + offset + (24 * e)));
+    for (int e = 0; e < row_count; e++) {
+      printf("%04x: ", row_length * e + offset);
+      for (int i = 0; i < row_length; i++) {
+        if (i + (row_length * e) + offset < 0x1000) {
+          printf("%02x%s", *(shared_mem + i + offset + (row_length * e)),
+                 i % 2 == 0 ? "" : " ");
         }
       }
       printf("\n");
